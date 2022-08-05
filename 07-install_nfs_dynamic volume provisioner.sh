@@ -48,3 +48,8 @@ helm install nfs-subdir-external-provisioner nfs-subdir-external-provisioner/nfs
 https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner/tree/v4.0.2
 https://www.youtube.com/watch?v=DF3v2P8ENEg&t=48s
 https://www.howtoforge.com/how-to-install-nfs-client-and-server-on-ubuntu-2004/
+
+#rasa installation notes
+#in order to make rasa work with this dynamic installation,you need to add the nsf-client storage class to the rasa deployment
+#this can be done through the helm installation, there is an option for it in the rasa chart
+#trying to change this on the deployment or pod level will cause errors and it forbidden to do so.
