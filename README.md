@@ -8,6 +8,12 @@ For administration:
 - Install the lens application: it makes life easy
 - Create a tunnel into the server and connect to your control place port
 
+Lens link: https://k8slens.dev/
+
+In order to connect lens to your cluster, you need to download your config file.
+Depending on which OS you use, in your home directory create a .kube folder and put that file there.
+Make sure if its a remote server its using a public IP and an open port on the network.
+
 ```
 ssh -fNL <port>:x.x.x.x:<port> <server credentials> e.g admin@x.x.x.x
 ```
@@ -17,6 +23,8 @@ On your local machine check the tunnel like this
 sudo netstat -nltp | grep <port>
 
 ```
+## Note:
+- K8 does not come preinstalled with network ability or ability to mount volumes, this has to be done manually by the k8 admin.
 
 Follow this process:
 
