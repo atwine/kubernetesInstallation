@@ -27,7 +27,7 @@ net.bridge.bridge-nf-call-iptables = 1
 net.ipv4.ip_forward = 1
 EOF
 
-#enable the configs for network
+# #enable the configs for network
 sudo sysctl --system
 
 sudo tee /etc/modules-load.d/containerd.conf <<EOF
@@ -35,11 +35,6 @@ overlay
 br_netfilter
 EOF
 
-sudo tee /etc/sysctl.d/kubernetes.conf<<EOF
-net.bridge.bridge-nf-call-ip6tables = 1
-net.bridge.bridge-nf-call-iptables = 1
-net.ipv4.ip_forward = 1
-EOF
 
 #enable the configs for network
 sudo sysctl --system
@@ -62,13 +57,18 @@ sudo systemctl enable kubelet
 
 #on the master server run the following commands on the master server
 sudo kubeadm config images pull --cri-socket /run/containerd/containerd.sock --kubernetes-version v1.24.3
+# sudo kubeadm config images pull
 
 #initiate the kubeadm cluster on the master server only
 #to get more information use the link below
 #you can choose the piblic ip of the master node for the control-plane-endpoint and an open port for the api-server-port
 #https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-init/
 #sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --upload-certs --kubernetes-version=v1.24.3  --control-plane-endpoint=10.35.50.53 --ignore-preflight-errors=all  --cri-socket /run/containerd/containerd.sock
-sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --upload-certs --kubernetes-version=v1.24.3 --apiserver-bind-port=34801 --control-plane-endpoint=137.63.194.17 --ignore-preflight-errors=all  --cri-socket /run/containerd/containerd.sock
+sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --skip-phases=addon/kube-proxy --upload-certs --kubernetes-version=v1.24.3 --apiserver-bind-port=34801 --control-plane-endpoint=137.63.194.17 --ignore-preflight-errors=all  --cri-socket /run/containerd/containerd.sock
+#sudo kubeadm init --service-cidr=172.16.0.0/17 --pod-network-cidr=172.16.128.0/16 --upload-certs --kubernetes-version=v1.24.3 --apiserver-bind-port=34801 --control-plane-endpoint=137.63.194.17 --ignore-preflight-errors=all
+
+#when I used merantis container runtime this below was the way to kubeadm init
+sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --upload-certs --kubernetes-version=v1.24.3 --apiserver-bind-port=34801 --control-plane-endpoint=137.63.194.17 --ignore-preflight-errors=all --cri-socket unix:///run/cri-dockerd.sock
 
 #keep the kubeadm config file in the home directory
 mkdir -p $HOME/.kube
@@ -78,6 +78,7 @@ export KUBECONFIG=/etc/kubernetes/admin.conf
 
 #install  the flannel network
 kubectl apply -f https://github.com/coreos/flannel/raw/master/Documentation/kube-flannel.yml
+# do callido
 
 #remove the taints from the master node so that pods can be deployed on it also.
 kubectl taint node $(hostname) node-role.kubernetes.io/control-plane:NoSchedule-
@@ -102,10 +103,11 @@ kubectl taint nodes --all node-role.kubernetes.io/control-plane-
 kubectl taint nodes --all node-role.kubernetes.io/master-
 
 #joining commands
+
 You can now join any number of the control-plane node running the following command on each as root:
 
-  kubeadm join 137.63.194.17:34801 --token mg11ce.buglsrlmulysvmks \
-        --discovery-token-ca-cert-hash sha256:e00dda337ad7cc50ea4781b931e1f80b13663b4d206f619f9a82c67abcef26ef \
-        --control-plane --certificate-key 9f8b8ead53c43fac4fe2d7b485f1ae55eb4ccc621b1cb38f41c7736f260651bc
+  kubeadm join 137.63.194.17:34801 --token gwbpsh.d0mxwww053bfi1g7 \
+        --discovery-token-ca-cert-hash sha256:3eb655c5be43f1bcbd004ac16235351aba43e79d94539e226316e1678de291d0 \
+        --control-plane --certificate-key 66349cfd545b0023fbabc37e998a1dca0092ee7781f646eaf1cf25a76333c25d
 
-sudo kubeadm join 137.63.194.17:34801 --token mg11ce.buglsrlmulysvmks --discovery-token-ca-cert-hash sha256:e00dda337ad7cc50ea4781b931e1f80b13663b4d206f619f9a82c67abcef26ef
+kubeadm join 137.63.194.17:34801 --token gwbpsh.d0mxwww053bfi1g7 --discovery-token-ca-cert-hash sha256:3eb655c5be43f1bcbd004ac16235351aba43e79d94539e226316e1678de291d0

@@ -15,6 +15,9 @@ sudo apt-get install nfs-common
 #update the client
 sudo apt-get update
 
+#check status of the nfs server
+systemctl status nfs-kernel-server
+
 #create shared directory on master server
 sudo mkdir /var/nfs/general -p
 
@@ -35,8 +38,13 @@ curl -L https://get.helm.sh/helm-v3.2.1-linux-amd64.tar.gz | tar xz -C /usr/loca
 #the two instructions below will assist
 helm repo add nfs-subdir-external-provisioner https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
 helm install nfs-subdir-external-provisioner nfs-subdir-external-provisioner/nfs-subdir-external-provisioner \
-    --set nfs.server=x.x.x.x \
-    --set nfs.path=/exported/path
+    --set nfs.server=137.63.194.17 \
+    --set nfs.path=/var/nfs/general
+
+#In the helm installation you have to insert two values:
+nfs.server: 137.63.194.17
+nfs.path: /var/nfs/general
+#note: if you do not do this, then the installaction will fail.
 
 #install the subdir provisioner
 helm install nfs-subdir-external-provisioner nfs-subdir-external-provisioner/nfs-subdir-external-provisioner --set nfs.server=137.63.194.17 --set nfs.path=/var/nfs/general
@@ -53,3 +61,9 @@ https://www.howtoforge.com/how-to-install-nfs-client-and-server-on-ubuntu-2004/
 #in order to make rasa work with this dynamic installation,you need to add the nsf-client storage class to the rasa deployment
 #this can be done through the helm installation, there is an option for it in the rasa chart
 #trying to change this on the deployment or pod level will cause errors and it forbidden to do so.
+
+#Notes for management:
+#Install prometheus for node management
+#use helm
+helm install prometheus stable/prometheus --set server.persistentVolume.enabled=true --set server.persistentVolume.storageClassName=nfs-client
+#that way you are able to see the utilization of resources.
