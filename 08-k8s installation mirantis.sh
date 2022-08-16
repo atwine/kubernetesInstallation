@@ -80,12 +80,12 @@ systemctl status cri-docker.socket
 Listen: /run/cri-docker.sock
 
 # Proceed and pull container images
-sudo kubeadm config images pull --cri-socket /run/cri-docker.sock
+sudo kubeadm config images pull --cri-socket unix:///var/run/cri-dockerd.sock
 
 # The below example can be used for a single node controller
 sudo kubeadm init \
   --pod-network-cidr=192.168.0.0/16 \
-  --cri-socket /run/cri-docker.sock
+  --cri-socket /run/cri-dockerd.sock
 
  #now you have to install a cni plugin for calico
  kubectl create -f https://projectcalico.docs.tigera.io/manifests/tigera-operator.yaml

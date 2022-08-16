@@ -52,11 +52,12 @@ mkdir -p /etc/containerd
 containerd config default>/etc/containerd/config.toml
 sudo systemctl restart containerd
 sudo systemctl enable containerd
+sudo systemctl status enable containerd
 
 sudo systemctl enable kubelet
 
 #on the master server run the following commands on the master server
-sudo kubeadm config images pull --cri-socket /run/containerd/containerd.sock --kubernetes-version v1.24.3
+sudo kubeadm config images pull --cri-socket unix:///run/containerd/containerd.sock
 # sudo kubeadm config images pull
 
 #initiate the kubeadm cluster on the master server only
@@ -64,11 +65,11 @@ sudo kubeadm config images pull --cri-socket /run/containerd/containerd.sock --k
 #you can choose the piblic ip of the master node for the control-plane-endpoint and an open port for the api-server-port
 #https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-init/
 #sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --upload-certs --kubernetes-version=v1.24.3  --control-plane-endpoint=10.35.50.53 --ignore-preflight-errors=all  --cri-socket /run/containerd/containerd.sock
-sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --skip-phases=addon/kube-proxy --upload-certs --kubernetes-version=v1.24.3 --apiserver-bind-port=34801 --control-plane-endpoint=137.63.194.17 --ignore-preflight-errors=all  --cri-socket /run/containerd/containerd.sock
+# sudo kubeadm init --pod-network-cidr=10.244.0.0/16  --upload-certs --kubernetes-version=v1.24.3 --apiserver-bind-port=34801 --control-plane-endpoint=137.63.194.17 --ignore-preflight-errors=all  --cri-socket /run/containerd/containerd.sock
 #sudo kubeadm init --service-cidr=172.16.0.0/17 --pod-network-cidr=172.16.128.0/16 --upload-certs --kubernetes-version=v1.24.3 --apiserver-bind-port=34801 --control-plane-endpoint=137.63.194.17 --ignore-preflight-errors=all
 
 #when I used merantis container runtime this below was the way to kubeadm init
-sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --upload-certs --kubernetes-version=v1.24.3 --apiserver-bind-port=34801 --control-plane-endpoint=137.63.194.17 --ignore-preflight-errors=all --cri-socket unix:///run/cri-dockerd.sock
+sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --upload-certs --apiserver-bind-port=34801 --control-plane-endpoint=137.63.194.17 --apiserver-cert-extra-sans=137.63.194.17 --ignore-preflight-errors=all  --cri-socket /run/cri-dockerd.sock
 
 #keep the kubeadm config file in the home directory
 mkdir -p $HOME/.kube
@@ -106,8 +107,12 @@ kubectl taint nodes --all node-role.kubernetes.io/master-
 
 You can now join any number of the control-plane node running the following command on each as root:
 
-  kubeadm join 137.63.194.17:34801 --token gwbpsh.d0mxwww053bfi1g7 \
-        --discovery-token-ca-cert-hash sha256:3eb655c5be43f1bcbd004ac16235351aba43e79d94539e226316e1678de291d0 \
-        --control-plane --certificate-key 66349cfd545b0023fbabc37e998a1dca0092ee7781f646eaf1cf25a76333c25d
+  kubeadm join 137.63.194.17:34801 --token kmxjhb.mt7pyhne3xf7gpjy \
+        --discovery-token-ca-cert-hash sha256:b492b044c720b6b023c436b9ffc6d5fef919b0311bd71224c52d7813b34da8d4 \
+        --control-plane --certificate-key 33473cf6ab635c19420fd27165c45313abf074bdcf0688efdeae98f7a98212d5
 
-kubeadm join 137.63.194.17:34801 --token gwbpsh.d0mxwww053bfi1g7 --discovery-token-ca-cert-hash sha256:3eb655c5be43f1bcbd004ac16235351aba43e79d94539e226316e1678de291d0
+kubeadm join 137.63.194.17:34801 --token kmxjhb.mt7pyhne3xf7gpjy \
+        --discovery-token-ca-cert-hash sha256:b492b044c720b6b023c436b9ffc6d5fef919b0311bd71224c52d7813b34da8d4
+
+#kubectl version to work with
+apt install -y kubelet=1.23.9-00 kubectl=1.23.9-00 kubeadm=1.23.9-00
