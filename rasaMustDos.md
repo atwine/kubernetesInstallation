@@ -11,4 +11,17 @@
 10 - Attach the widget for the frontend app.(this can be done only when the speeds at the backend are fast enough.)
 
 - For kubernetes scaling, set it to autoscaling so that the cluster will self heal otherwise the load might be too much for the network.
-**  Get the certificate for the domain name you are going to use:
+**  Get the certificate for the domain name you are going to use: (http://chatbot.aceuganda.org/)
+
+- Creating ingress routes:
+ This link will assist in creating ingress routes and certificates: [Certificates](https://www.padok.fr/en/blog/traefik-kubernetes-certmanager)
+
+
+### Things to try next time when installing the k3s instance:
+- Don't install traefik along with the rest of the installation, install it later so you can have more access to the options it avails.
+
+### Spinning up an HA k3s cluster with Ansible
+- https://www.youtube.com/watch?app=desktop&v=CbkEWcUZ7zM
+- https://github.com/techno-tim/k3s-ansible
+#### This link here below is what I should probably follow in order to get things working with https/ssl
+-[ https://www.youtube.com/watch?v=G4CmbYL9UPg](https://docs.technotim.live/posts/kube-traefik-cert-manager-le/)
